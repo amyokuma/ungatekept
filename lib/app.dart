@@ -28,7 +28,9 @@ class MainApp extends StatelessWidget {
             fontSize: 30,
             fontStyle: FontStyle.italic,
           ),
-          bodyMedium: GoogleFonts.openSans(),
+          bodyMedium: GoogleFonts.openSans(
+            fontSize: 24
+          ),
           displaySmall: GoogleFonts.openSans(),
         ),
         iconTheme: const IconThemeData(color: Colors.white70),
