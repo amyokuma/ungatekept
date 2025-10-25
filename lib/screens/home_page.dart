@@ -51,6 +51,14 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.pushNamed(context, '/auth');
+        },
+        label: const Text('Login / Sign Up'),
+        icon: const Icon(Icons.person),
+        backgroundColor: const Color(0xff41342b),
+      ),
     );
   }
 }

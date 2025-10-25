@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'screens/auth_page.dart';
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
@@ -36,6 +37,9 @@ class MainApp extends StatelessWidget {
         iconTheme: const IconThemeData(color: Colors.white70),
       ),
       home: HomePage(),
+      routes: {
+        AuthPage.route: (context) => const AuthPage(),
+      },
     );
   }
 }
