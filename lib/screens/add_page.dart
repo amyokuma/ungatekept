@@ -12,6 +12,8 @@ class AddPage extends StatefulWidget {
 
 class _AddPageState extends State<AddPage> {
 
+  int _rating = 0;
+
   List<File> _selectedImages = [];
   final ImagePicker _picker = ImagePicker();
 
@@ -30,7 +32,7 @@ class _AddPageState extends State<AddPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _locationController = TextEditingController();
-  final _descriptionController = TextEditingController();
+  final _reviewController = TextEditingController();
   final _latitudeController = TextEditingController();
   final _longitudeController = TextEditingController();
   
@@ -71,7 +73,7 @@ class _AddPageState extends State<AddPage> {
   void dispose() {
     _nameController.dispose();
     _locationController.dispose();
-    _descriptionController.dispose();
+    _reviewController.dispose();
     _latitudeController.dispose();
     _longitudeController.dispose();
     super.dispose();
@@ -375,6 +377,34 @@ class _AddPageState extends State<AddPage> {
                 },
               ),
               const SizedBox(height: 16),
+
+              // Rating input
+              const Text(
+                'Rating',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xff41342b),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: List.generate(5, (index) {
+                  return IconButton(
+                    icon: Icon(
+                      index < _rating ? Icons.star : Icons.star_border,
+                      color: const Color(0xff795548),
+                      size: 32,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _rating = index + 1;
+                      });
+                    },
+                  );
+                }),
+              ),
+              const SizedBox(height: 16),
               
               // Multi-select category dropdown
               const Text(
@@ -480,15 +510,15 @@ class _AddPageState extends State<AddPage> {
               
               const SizedBox(height: 16),
               
-              // Description field
+              // review field
               _buildTextField(
-                controller: _descriptionController,
-                label: 'Description',
-                hint: 'Tell us a little bit about this location...',
+                controller: _reviewController,
+                label: 'Review',
+                hint: 'Tell us your thoughts on this location...',
                 maxLines: 4,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a description';
+                    return 'Please enter a review';
                   }
                   return null;
                 },
