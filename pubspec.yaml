@@ -26,3 +26,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+  fonts:
+    - family: GamabadoSans
+      fonts:
+        - asset: assets/fonts/fonnts.com-Gambado_Sans.otf

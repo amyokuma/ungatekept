@@ -4,103 +4,120 @@ import 'package:Loaf/screens/auth_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:Loaf/screens/landmark_details_page.dart';
 import 'package:Loaf/screens/add_page.dart';
+import 'package:Loaf/widget/nav.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            backgroundColor: const Color(0xfff8f4f3),
-            pinned: true,
-            elevation: 0,
-            centerTitle: true,
-            leading: IconButton(
-              icon: const Icon(Icons.chevron_left),
-              onPressed: () {},
-            ),
-            title: const Text(
-              'Loaf',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(64),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                child: _SearchField(),
-              ),
-            ),
-          ),
-
-          // ---- 1-COLUMN SCROLLABLE LIST ----
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-            sliver: SliverList.builder(
-              itemCount: _mockMenu.length,
-              itemBuilder: (context, index) {
-                final item = _mockMenu[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: _LocationTile(
-                    title: item.title,
-                    description: item.description,
-                    imageUrl: item.imageUrl,
-                    latitude: item.latitude,
-                    longitude: item.longitude,
+    return AppNavScaffold(
+      initialIndex: 0,
+      body: Stack(
+        children: [
+          CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                backgroundColor: const Color(0xfff8f4f3),
+                pinned: true,
+                elevation: 0,
+                centerTitle: true,
+                leading: IconButton(
+                  icon: Image.asset(
+                    'assets/images/loaf_transparent.png',
+                    width: 36,
+                    height: 36,
+                    fit: BoxFit.contain,
                   ),
+                  onPressed: () {
+                    Navigator.of(context).pushReplacementNamed('/home');
+                  },
+                  tooltip: 'Home',
+                ),
+                actions: [],
+                title: Text(
+                  'Loaf',
+                  style: TextStyle(
+                    fontFamily: 'GamabadoSans',
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(64),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                    child: _SearchField(),
+                  ),
+                ),
+              ),
+
+              // ---- 1-COLUMN SCROLLABLE LIST ----
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                sliver: SliverList.builder(
+                  itemCount: _mockMenu.length,
+                  itemBuilder: (context, index) {
+                    final item = _mockMenu[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: _LocationTile(
+                        title: item.title,
+                        description: item.description,
+                        imageUrl: item.imageUrl,
+                        latitude: item.latitude,
+                        longitude: item.longitude,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+          Positioned(
+            bottom: 24,
+            right: 24,
+            child: StreamBuilder<User?>(
+              stream: FirebaseAuth.instance.authStateChanges(),
+              builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
+                if (snapshot.hasError) {
+                  return const Text('Something went wrong');
+                }
+
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Text("Loading...");
+                }
+
+                if (snapshot.hasData && snapshot.data != null) {
+                  return FloatingActionButton.extended(
+                    onPressed: () {
+                      Auth().signOut(context: context);
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => AuthPage()),
+                      );
+                    },
+                    label: const Text('Log out'),
+                    icon: const Icon(Icons.person),
+                    backgroundColor: const Color(0xff41342b),
+                  );
+                }
+
+                return FloatingActionButton.extended(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => AuthPage()),
+                    );
+                  },
+                  label: const Text('Login / Sign Up'),
+                  icon: const Icon(Icons.person),
+                  backgroundColor: const Color(0xff41342b),
                 );
               },
             ),
           ),
         ],
-      ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     Navigator.push(
-      //       context,
-      //       MaterialPageRoute(builder: (context) => AddPage()),
-      //     )}),
-      floatingActionButton: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
-          if (snapshot.hasError) {
-            return const Text('Something went wrong');
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Text("Loading...");
-          }
-
-          if (snapshot.hasData && snapshot.data != null) {
-            return FloatingActionButton.extended(
-              onPressed: () {
-                Auth().signOut(context: context);
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => AuthPage()),
-                );
-              },
-              label: const Text('Log out'),
-              icon: const Icon(Icons.person),
-              backgroundColor: const Color(0xff41342b),
-            );
-          }
-
-          return FloatingActionButton.extended(
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => AuthPage()),
-              );
-            },
-            label: const Text('Login / Sign Up'),
-            icon: const Icon(Icons.person),
-            backgroundColor: const Color(0xff41342b),
-          );
-        },
       ),
     );
   }
