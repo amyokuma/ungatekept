@@ -1,4 +1,6 @@
 import 'package:Loaf/screens/profile_page.dart';
+import 'package:Loaf/screens/your_lists_page.dart';
+import 'package:Loaf/screens/friends_page.dart';
 import 'package:flutter/material.dart';
 import 'package:Loaf/screens/home_page.dart';
 import 'package:Loaf/screens/add_page.dart';
@@ -37,10 +39,15 @@ class _AppNavScaffoldState extends State<AppNavScaffold> {
         _selectedIndex = index;
       });
     } else if (index == 1) {
-      // TODO: Navigate to Your Lists page
-      setState(() {
-        _selectedIndex = index;
-      });
+      if (widget.body.runtimeType != YourListsPage) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const YourListsPage()),
+        );
+        setState(() {
+          _selectedIndex = index;
+        });
+      }
     } else if (index == 2) {
       final prevIndex = _selectedIndex;
       setState(() {
@@ -55,10 +62,15 @@ class _AppNavScaffoldState extends State<AppNavScaffold> {
         _selectedIndex = prevIndex;
       });
     } else if (index == 3) {
-      // TODO: Navigate to Friends page
-      setState(() {
-        _selectedIndex = index;
-      });
+      if (widget.body.runtimeType != FriendsPage) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const FriendsPage()),
+        );
+        setState(() {
+          _selectedIndex = index;
+        });
+      }
     } else if (index == 4) {
       Navigator.push(
         context,
