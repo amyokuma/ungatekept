@@ -1,3 +1,4 @@
+import 'package:Loaf/screens/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:Loaf/screens/home_page.dart';
 import 'package:Loaf/screens/add_page.dart';
@@ -42,7 +43,10 @@ class _AppNavScaffoldState extends State<AppNavScaffold> {
     } else if (index == 3) {
       // TODO: Navigate to Friends page
     } else if (index == 4) {
-      // TODO: Navigate to Profile page
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ProfilePage()),
+      );
     }
     setState(() {
       _selectedIndex = index;
