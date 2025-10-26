@@ -1,5 +1,16 @@
+// import 'package:Loaf/providers/firestore.dart';
+import 'package:Loaf/providers/auth.dart';
+import 'package:Loaf/services/AddLocationService.dart';
+import 'package:Loaf/services/LocationService.dart';
+import 'package:Loaf/services/ReviewServices.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'package:Loaf/config/api_keys.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 
@@ -34,6 +45,12 @@ class _AddPageState extends State<AddPage> {
   final _reviewController = TextEditingController();
   final _latitudeController = TextEditingController();
   final _longitudeController = TextEditingController();
+  final _auth = Auth();
+  final _locationService = LocationService();
+  final _reviewService = ReviewService();
+  // final _firestoreService = FirestoreService();
+
+  String _selectedCategory = 'Architectural Marvel';
   
   List<String> _selectedCategories = [];
   final List<String> _categories = [
@@ -64,9 +81,16 @@ class _AddPageState extends State<AddPage> {
     'Trendy',
   ];
 
-  
   bool _isLoadingLocation = false;
-  // Removed unused location search fields
+  bool _isSearching = false;
+  List<Map<String, dynamic>> _locationSuggestions = [];
+  bool _showSuggestions = false;
+  Timer? _debounce;
+  GeoPoint? _userLocation;
+  List<LocationWithDistance>? _nearbyLocations;
+  String? userId;
+  String? locationId;
+  List<String> tags = ["test"];
 
   @override
   void dispose() {
@@ -86,7 +110,9 @@ class _AddPageState extends State<AddPage> {
       // Check if location services are enabled
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        _showError('Location services are disabled. Please enable them in settings.');
+        _showError(
+          'Location services are disabled. Please enable them in settings.',
+        );
         setState(() {
           _isLoadingLocation = false;
         });
@@ -107,7 +133,9 @@ class _AddPageState extends State<AddPage> {
       }
 
       if (permission == LocationPermission.deniedForever) {
-        _showError('Location permissions are permanently denied. Please enable them in settings.');
+        _showError(
+          'Location permissions are permanently denied. Please enable them in settings.',
+        );
         setState(() {
           _isLoadingLocation = false;
         });
@@ -119,11 +147,19 @@ class _AddPageState extends State<AddPage> {
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      // Update the text fields
+      // fetch nearby locations
+      _userLocation = GeoPoint(position.latitude, position.longitude);
+
+      final results = await _locationService.findNearbyLocations(
+        _userLocation!,
+      );
+
+      // Update the text fields, locations list
       setState(() {
         _latitudeController.text = position.latitude.toStringAsFixed(6);
         _longitudeController.text = position.longitude.toStringAsFixed(6);
         _isLoadingLocation = false;
+        _nearbyLocations = results;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -151,57 +187,44 @@ class _AddPageState extends State<AddPage> {
     );
   }
 
-
   Future<void> _saveLandmark() async {
-  // Validate the form first
-  if (_formKey.currentState?.validate() ?? false) {
-    // Extract data from controllers
-    final name = _nameController.text.trim();
-    final review = _reviewController.text.trim();
-    final latitude = double.tryParse(_latitudeController.text.trim());
-    final longitude = double.tryParse(_longitudeController.text.trim());
-    final categories = _selectedCategories;
+    // get location id if not exist
+    userId = await _auth.getCurrentUser();
 
-    // Check if latitude and longitude are valid numbers
-    if (latitude == null || longitude == null) {
-      // Show error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter valid latitude and longitude'),
-        ),
-      );
-      return;
+    if (userId == null) {
+      throw Exception("not logged in?");
     }
 
-    // Create a map or model object to send to database
-    final landmarkData = {
-      'name': name,
-      'review': review,
-      'latitude': latitude,
-      'longitude': longitude,
-      'tags': categories
-    };
+    if (_formKey.currentState!.validate()) {
+      try {
+        if (locationId != null) {
+          await _locationService.addLocation(
+            name: _nameController.text,
+            coords: GeoPoint(_userLocation!.latitude, _userLocation!.longitude),
+            tags: tags,
+            description: _descriptionController.text,
+          );
+        } else {
+          locationId = await _reviewService.getNextID();
 
-    try {
-      // Call your database function here
-      // await saveLandmarkToDatabase(landmarkData);
-      
-      // Show success message
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Landmark saved successfully!')),
-        );
-        
-        // Navigate back or clear form
-        Navigator.pop(context);
+          await _reviewService.addReview(
+            userId: userId!,
+            locationId: locationId!,
+            rating: 5,
+            description: _descriptionController.text,
+            pictureUrl: "TODO",
+          );
+        }
+      } catch (e) {
+        throw Exception("error");
       }
-    } catch (e) {
-      // Handle error
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving landmark: $e')),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Landmark saved successfully!'),
+          backgroundColor: Color(0xFF9333EA),
+        ),
+      );
+      Navigator.pop(context);
     }
   }
 }
@@ -365,7 +388,9 @@ class _AddPageState extends State<AddPage> {
                       controller: _latitudeController,
                       label: 'Latitude',
                       hint: '37.8199',
-                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Required';
@@ -383,7 +408,9 @@ class _AddPageState extends State<AddPage> {
                       controller: _longitudeController,
                       label: 'Longitude',
                       hint: '-122.4783',
-                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Required';
@@ -563,7 +590,7 @@ class _AddPageState extends State<AddPage> {
               
 
               const SizedBox(height: 32),
-              
+
               // Save button
               SizedBox(
                 width: double.infinity,
@@ -587,7 +614,7 @@ class _AddPageState extends State<AddPage> {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 40),
             ],
           ),
@@ -643,7 +670,10 @@ class _AddPageState extends State<AddPage> {
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: Color(0xffb71c1c), width: 2),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
           ),
         ),
       ],
