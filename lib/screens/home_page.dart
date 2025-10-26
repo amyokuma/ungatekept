@@ -145,11 +145,21 @@ class _LocationTile extends StatelessWidget {
       child: Stack(
         children: [
           AspectRatio(
-            aspectRatio: 14 / 11,
-            child: Ink.image(
-              image: NetworkImage(imageUrl),
-              fit: BoxFit.cover,
-              child: InkWell(onTap: () {}),
+            aspectRatio: 16 / 11, // tweak to match your mock height
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LandmarkDetailPage(
+                      name: title,
+                      location: 'San Francisco, CA',
+                      imageUrl: imageUrl,
+                      description: description,
+                    ),
+                  ),
+                );
+              },
             ),
           ),
 
@@ -163,8 +173,8 @@ class _LocationTile extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  stops: const [0, 1],
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.78)],
+                  stops: const [0.1, 1.0],
+                  colors: [Colors.transparent, Colors.black.withOpacity(0.75)],
                 ),
               ),
               child: Column(
