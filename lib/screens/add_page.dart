@@ -22,7 +22,6 @@ class AddPage extends StatefulWidget {
 }
 
 class _AddPageState extends State<AddPage> {
-
   int _rating = 0;
 
   List<File> _selectedImages = [];
@@ -40,6 +39,7 @@ class _AddPageState extends State<AddPage> {
       });
     }
   }
+
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _reviewController = TextEditingController();
@@ -51,7 +51,7 @@ class _AddPageState extends State<AddPage> {
   // final _firestoreService = FirestoreService();
 
   String _selectedCategory = 'Architectural Marvel';
-  
+
   List<String> _selectedCategories = [];
   final List<String> _categories = [
     'Cozy',
@@ -90,7 +90,7 @@ class _AddPageState extends State<AddPage> {
   List<LocationWithDistance>? _nearbyLocations;
   String? userId;
   String? locationId;
-  List<String> tags = ["test"];
+  List<String> tags = [];
 
   @override
   void dispose() {
@@ -201,8 +201,8 @@ class _AddPageState extends State<AddPage> {
           await _locationService.addLocation(
             name: _nameController.text,
             coords: GeoPoint(_userLocation!.latitude, _userLocation!.longitude),
-            tags: tags,
-            description: _descriptionController.text,
+            tags: List.from(_selectedCategories),
+            description: _reviewController.text,
           );
         } else {
           locationId = await _reviewService.getNextID();
@@ -211,7 +211,7 @@ class _AddPageState extends State<AddPage> {
             userId: userId!,
             locationId: locationId!,
             rating: 5,
-            description: _descriptionController.text,
+            description: _reviewController.text,
             pictureUrl: "TODO",
           );
         }
@@ -227,7 +227,6 @@ class _AddPageState extends State<AddPage> {
       Navigator.pop(context);
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -275,11 +274,18 @@ class _AddPageState extends State<AddPage> {
                 onTap: _pickImages,
                 child: Container(
                   width: double.infinity,
-                  constraints: const BoxConstraints(minHeight: 200, maxHeight: 320),
+                  constraints: const BoxConstraints(
+                    minHeight: 200,
+                    maxHeight: 320,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xffe7dfd8),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xffd2c2b2), width: 2, style: BorderStyle.solid),
+                    border: Border.all(
+                      color: const Color(0xffd2c2b2),
+                      width: 2,
+                      style: BorderStyle.solid,
+                    ),
                   ),
                   child: _selectedImages.isNotEmpty
                       ? Padding(
@@ -290,7 +296,9 @@ class _AddPageState extends State<AddPage> {
                             crossAxisSpacing: 8,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            children: List.generate(_selectedImages.length, (idx) {
+                            children: List.generate(_selectedImages.length, (
+                              idx,
+                            ) {
                               return Stack(
                                 children: [
                                   ClipRRect(
@@ -333,7 +341,11 @@ class _AddPageState extends State<AddPage> {
                       : Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.add_photo_alternate, size: 48, color: Color(0xffbca18c)),
+                            const Icon(
+                              Icons.add_photo_alternate,
+                              size: 48,
+                              color: Color(0xffbca18c),
+                            ),
                             const SizedBox(height: 8),
                             const Text(
                               'Add Photo(s)',
@@ -346,7 +358,7 @@ class _AddPageState extends State<AddPage> {
                         ),
                 ),
               ),
-              
+
               const SizedBox(height: 24),
 
               // Coordinates section (moved up)
@@ -369,11 +381,21 @@ class _AddPageState extends State<AddPage> {
                             height: 16,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xff795548)),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xff795548),
+                              ),
                             ),
                           )
-                        : const Icon(Icons.my_location, size: 18, color: Color(0xff795548)),
-                    label: Text(_isLoadingLocation ? 'Getting location...' : 'Use My Location'),
+                        : const Icon(
+                            Icons.my_location,
+                            size: 18,
+                            color: Color(0xff795548),
+                          ),
+                    label: Text(
+                      _isLoadingLocation
+                          ? 'Getting location...'
+                          : 'Use My Location',
+                    ),
                     style: TextButton.styleFrom(
                       foregroundColor: const Color(0xff795548),
                     ),
@@ -467,7 +489,7 @@ class _AddPageState extends State<AddPage> {
                 }),
               ),
               const SizedBox(height: 16),
-              
+
               // Multi-select category dropdown
               const Text(
                 'Categories',
@@ -480,56 +502,66 @@ class _AddPageState extends State<AddPage> {
               const SizedBox(height: 8),
               GestureDetector(
                 onTap: () async {
-                  final List<String> result = await showDialog(
-                    context: context,
-                    builder: (context) {
-                      List<String> tempSelected = List.from(_selectedCategories);
-                      return StatefulBuilder(
-                        builder: (context, setStateDialog) {
-                          return AlertDialog(
-                            title: const Text('Select categories'),
-                            content: SizedBox(
-                              width: double.maxFinite,
-                              child: ListView(
-                                shrinkWrap: true,
-                                children: _categories.map((category) {
-                                  return CheckboxListTile(
-                                    value: tempSelected.contains(category),
-                                    title: Text(category),
-                                    onChanged: (checked) {
-                                      setStateDialog(() {
-                                        if (checked == true) {
-                                          tempSelected.add(category);
-                                        } else {
-                                          tempSelected.remove(category);
-                                        }
-                                      });
-                                    },
-                                  );
-                                }).toList(),
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(_selectedCategories),
-                                child: const Text('Cancel'),
-                              ),
-                              ElevatedButton(
-                                onPressed: () => Navigator.of(context).pop(tempSelected),
-                                child: const Text('OK'),
-                              ),
-                            ],
+                  final List<String> result =
+                      await showDialog(
+                        context: context,
+                        builder: (context) {
+                          List<String> tempSelected = List.from(
+                            _selectedCategories,
+                          );
+                          return StatefulBuilder(
+                            builder: (context, setStateDialog) {
+                              return AlertDialog(
+                                title: const Text('Select categories'),
+                                content: SizedBox(
+                                  width: double.maxFinite,
+                                  child: ListView(
+                                    shrinkWrap: true,
+                                    children: _categories.map((category) {
+                                      return CheckboxListTile(
+                                        value: tempSelected.contains(category),
+                                        title: Text(category),
+                                        onChanged: (checked) {
+                                          setStateDialog(() {
+                                            if (checked == true) {
+                                              tempSelected.add(category);
+                                            } else {
+                                              tempSelected.remove(category);
+                                            }
+                                          });
+                                        },
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(
+                                      context,
+                                    ).pop(_selectedCategories),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(tempSelected),
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              );
+                            },
                           );
                         },
-                      );
-                    },
-                  ) ?? _selectedCategories;
+                      ) ??
+                      _selectedCategories;
                   setState(() {
                     _selectedCategories = result;
                   });
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 18,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
@@ -552,7 +584,10 @@ class _AddPageState extends State<AddPage> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const Icon(Icons.arrow_drop_down, color: Color(0xffbca18c)),
+                      const Icon(
+                        Icons.arrow_drop_down,
+                        color: Color(0xffbca18c),
+                      ),
                     ],
                   ),
                 ),
@@ -560,18 +595,22 @@ class _AddPageState extends State<AddPage> {
               const SizedBox(height: 4),
               Wrap(
                 spacing: 8,
-                children: _selectedCategories.map((cat) => Chip(
-                  label: Text(cat),
-                  onDeleted: () {
-                    setState(() {
-                      _selectedCategories.remove(cat);
-                    });
-                  },
-                )).toList(),
+                children: _selectedCategories
+                    .map(
+                      (cat) => Chip(
+                        label: Text(cat),
+                        onDeleted: () {
+                          setState(() {
+                            _selectedCategories.remove(cat);
+                          });
+                        },
+                      ),
+                    )
+                    .toList(),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // review field
               _buildTextField(
                 controller: _reviewController,
@@ -585,9 +624,8 @@ class _AddPageState extends State<AddPage> {
                   return null;
                 },
               ),
-              
+
               const SizedBox(height: 16),
-              
 
               const SizedBox(height: 32),
 
@@ -622,7 +660,6 @@ class _AddPageState extends State<AddPage> {
       ),
     );
   }
-
 
   Widget _buildTextField({
     required TextEditingController controller,
