@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ungatekept/providers/auth.dart';
+import 'package:ungatekept/screens/home_page.dart';
 
 class AuthPage extends StatefulWidget {
   static const route = '/auth';
@@ -43,7 +45,19 @@ class _AuthPageState extends State<AuthPage> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
 
-    // TODO: Replace with real authentication call.
+    if (_isSigningUp) {
+      print("is signing up");
+      await Auth().signUp(
+        email: _emailCtrl.text.trim(),
+        password: _passwordCtrl.text,
+      );
+    } else {
+      print("is signing up");
+      await Auth().signIn(
+        email: _emailCtrl.text.trim(),
+        password: _passwordCtrl.text,
+      );
+    }
     await Future.delayed(const Duration(seconds: 1));
 
     setState(() => _loading = false);
@@ -55,7 +69,10 @@ class _AuthPageState extends State<AuthPage> {
     );
 
     // Example navigation after success:
-    // Navigator.of(context).pushReplacementNamed('/home');
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (BuildContext context) => const HomePage()),
+    );
   }
 
   Future<void> _googleSignIn() async {
@@ -78,11 +95,17 @@ class _AuthPageState extends State<AuthPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.lock_open, size: 88, color: theme.colorScheme.primary),
+                Icon(
+                  Icons.lock_open,
+                  size: 88,
+                  color: theme.colorScheme.primary,
+                ),
                 const SizedBox(height: 18),
                 Text(
                   'Ungatekept',
-                  style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w600),
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 SizedBox(
@@ -100,7 +123,9 @@ class _AuthPageState extends State<AuthPage> {
                     TextButton(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Privacy Policy tapped')),
+                          const SnackBar(
+                            content: Text('Privacy Policy tapped'),
+                          ),
                         );
                       },
                       child: const Text(
@@ -108,11 +133,16 @@ class _AuthPageState extends State<AuthPage> {
                         style: TextStyle(fontSize: 12),
                       ),
                     ),
-                    const Text('•', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    const Text(
+                      '•',
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
                     TextButton(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Terms of Service tapped')),
+                          const SnackBar(
+                            content: Text('Terms of Service tapped'),
+                          ),
                         );
                       },
                       child: const Text(
@@ -142,22 +172,33 @@ class _AuthPageState extends State<AuthPage> {
             constraints: const BoxConstraints(maxWidth: 520),
             child: Card(
               elevation: 6,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 28,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Header
                     Row(
                       children: [
-                        Icon(Icons.lock_open, size: 36, color: theme.colorScheme.primary),
+                        Icon(
+                          Icons.lock_open,
+                          size: 36,
+                          color: theme.colorScheme.primary,
+                        ),
                         const SizedBox(width: 12),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              _isSigningUp ? 'Create an account' : 'Welcome back',
+                              _isSigningUp
+                                  ? 'Create an account'
+                                  : 'Welcome back',
                               style: theme.textTheme.titleLarge,
                             ),
                             const SizedBox(height: 4),
@@ -217,8 +258,13 @@ class _AuthPageState extends State<AuthPage> {
                               labelText: 'Password',
                               prefixIcon: const Icon(Icons.lock),
                               suffixIcon: IconButton(
-                                icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
-                                onPressed: () => setState(() => _obscure = !_obscure),
+                                icon: Icon(
+                                  _obscure
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                                onPressed: () =>
+                                    setState(() => _obscure = !_obscure),
                               ),
                             ),
                             validator: _passwordValidator,
@@ -230,7 +276,9 @@ class _AuthPageState extends State<AuthPage> {
                               onPressed: () {
                                 // TODO: implement forgot password flow
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Forgot password tapped')),
+                                  const SnackBar(
+                                    content: Text('Forgot password tapped'),
+                                  ),
                                 );
                               },
                               child: const Text('Forgot password?'),
@@ -245,7 +293,9 @@ class _AuthPageState extends State<AuthPage> {
                                   ? const SizedBox(
                                       height: 18,
                                       width: 18,
-                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
                                     )
                                   : Text(_isSigningUp ? 'Sign Up' : 'Login'),
                             ),
@@ -254,7 +304,11 @@ class _AuthPageState extends State<AuthPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(_isSigningUp ? 'Already have an account?' : 'No account yet?'),
+                              Text(
+                                _isSigningUp
+                                    ? 'OVERFLOW.FIX'
+                                    : 'No account yet?',
+                              ),
                               TextButton(
                                 onPressed: () => setState(() {
                                   _isSigningUp = !_isSigningUp;

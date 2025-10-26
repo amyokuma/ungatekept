@@ -9,7 +9,8 @@ class Auth {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      print(e);
+      print("reached");
+      print(e.code);
     } catch (e) {
       print(e);
     }
@@ -22,7 +23,7 @@ class Auth {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      print(e);
+      print(e.code);
     } catch (e) {
       print(e);
     }
