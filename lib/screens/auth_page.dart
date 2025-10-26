@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:Loaf/providers/auth.dart';
 import 'package:Loaf/screens/home_page.dart';
@@ -51,35 +52,45 @@ class _AuthPageState extends State<AuthPage> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
+    try {
+      if (_isSigningUp) {
+        print("is signing up");
+        await Auth().signUp(
+          email: _emailCtrl.text.trim(),
+          password: _passwordCtrl.text,
+        );
+      } else {
+        print("is signing in");
+        await Auth().signIn(
+          email: _emailCtrl.text.trim(),
+          password: _passwordCtrl.text,
+        );
+      }
 
-    if (_isSigningUp) {
-      print("is signing up");
-      await Auth().signUp(
-        email: _emailCtrl.text.trim(),
-        password: _passwordCtrl.text,
+      await Future.delayed(const Duration(seconds: 1));
+
+      final action = _isSigningUp ? 'Signed up' : 'Logged in';
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$action as ${_emailCtrl.text.trim()}')),
       );
-    } else {
-      print("is signing up");
-      await Auth().signIn(
-        email: _emailCtrl.text.trim(),
-        password: _passwordCtrl.text,
+
+      // Example navigation after success:
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (BuildContext context) => const HomePage()),
       );
+    } on FirebaseAuthException catch (e) {
+      print(e.code); // TODO: HANDLE ERROR
+
+      // popup ERROR
+    } catch (e) {
+      print(e);
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
-    await Future.delayed(const Duration(seconds: 1));
-
-    setState(() => _loading = false);
-
-    final action = _isSigningUp ? 'Signed up' : 'Logged in';
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$action as ${_emailCtrl.text.trim()}')),
-    );
-
-    // Example navigation after success:
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (BuildContext context) => const HomePage()),
-    );
   }
 
   Future<void> _googleSignIn() async {
