@@ -31,7 +31,6 @@ class _AddPageState extends State<AddPage> {
   }
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _locationController = TextEditingController();
   final _reviewController = TextEditingController();
   final _latitudeController = TextEditingController();
   final _longitudeController = TextEditingController();
@@ -72,7 +71,6 @@ class _AddPageState extends State<AddPage> {
   @override
   void dispose() {
     _nameController.dispose();
-    _locationController.dispose();
     _reviewController.dispose();
     _latitudeController.dispose();
     _longitudeController.dispose();
@@ -154,22 +152,59 @@ class _AddPageState extends State<AddPage> {
   }
 
 
+  Future<void> _saveLandmark() async {
+  // Validate the form first
+  if (_formKey.currentState?.validate() ?? false) {
+    // Extract data from controllers
+    final name = _nameController.text.trim();
+    final review = _reviewController.text.trim();
+    final latitude = double.tryParse(_latitudeController.text.trim());
+    final longitude = double.tryParse(_longitudeController.text.trim());
+    final categories = _selectedCategories;
 
-
-
-  void _saveLandmark() {
-    if (_formKey.currentState!.validate()) {
-      // TODO: Save landmark data to database
-      // For now, just navigate back
+    // Check if latitude and longitude are valid numbers
+    if (latitude == null || longitude == null) {
+      // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Landmark saved successfully!'),
-          backgroundColor: Color(0xff795548),
+          content: Text('Please enter valid latitude and longitude'),
         ),
       );
-      Navigator.pop(context);
+      return;
+    }
+
+    // Create a map or model object to send to database
+    final landmarkData = {
+      'name': name,
+      'review': review,
+      'latitude': latitude,
+      'longitude': longitude,
+      'tags': categories
+    };
+
+    try {
+      // Call your database function here
+      // await saveLandmarkToDatabase(landmarkData);
+      
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Landmark saved successfully!')),
+        );
+        
+        // Navigate back or clear form
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      // Handle error
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error saving landmark: $e')),
+        );
+      }
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {
