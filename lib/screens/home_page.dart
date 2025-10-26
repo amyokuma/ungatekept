@@ -3,8 +3,9 @@ import 'package:Loaf/providers/auth.dart';
 import 'package:Loaf/screens/auth_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:Loaf/screens/landmark_details_page.dart';
-import 'package:Loaf/screens/add_page.dart';
-import 'package:Loaf/widget/menu.dart';
+import 'package:Loaf/widgets/location_card.dart';
+import 'package:Loaf/screens/search_spot_screen.dart';
+import 'package:Loaf/widgets/menu.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -26,6 +27,7 @@ class HomePage extends StatelessWidget {
                 pinned: true,
                 elevation: 0,
                 centerTitle: false,
+                automaticallyImplyLeading: false,
                 leading: null,
                 actions: [
                   IconButton(
@@ -86,23 +88,20 @@ class HomePage extends StatelessWidget {
                     final item = _mockMenu[index];
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 16),
-                      child: _LocationTile(
+                      child: LocationCard(
                         title: item.title,
                         description: item.description,
                         imageUrl: item.imageUrl,
                         latitude: item.latitude,
                         longitude: item.longitude,
+                        // Optionally pass tags or onTap if needed
                       ),
                     );
                   },
                 ),
               ),
-
-// --- Weather Info Section --------------------------------------------------
-
             ],
           ),
-          // Removed log out button from home page
         ],
       ),
     );
@@ -119,22 +118,36 @@ class _SearchField extends StatelessWidget {
       child: SizedBox(
         height: 36,
         width: double.infinity,
-        child: TextField(
-          style: const TextStyle(color: Color(0xff795548)),
-          cursorColor: Color(0xff795548),
-          decoration: InputDecoration(
-            hintText: 'Search for a chill spot',
-            hintStyle: const TextStyle(color: Color(0xff795548)),
-            prefixIcon: const Icon(Icons.search, color: Color(0xff795548)),
-            filled: true,
-            fillColor: Color(0xffe0e0e0), // gray
-            contentPadding: const EdgeInsets.symmetric(
-              vertical: 8,
-              horizontal: 12,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide.none,
+        child: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                fullscreenDialog: true,
+                builder: (context) => const SearchSpotScreen(),
+              ),
+            );
+          },
+          child: AbsorbPointer(
+            child: TextField(
+              enabled: false,
+              style: const TextStyle(color: Color(0xff795548)),
+              cursorColor: Color(0xff795548),
+              decoration: InputDecoration(
+                hintText: 'Search for a chill spot',
+                hintStyle: const TextStyle(color: Color(0xff795548)),
+                prefixIcon: const Icon(Icons.search, color: Color(0xff795548)),
+                filled: true,
+                fillColor: Color(0xffe0e0e0),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 12,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+              ),
             ),
           ),
         ),
@@ -143,108 +156,6 @@ class _SearchField extends StatelessWidget {
   }
 }
 
-class _LocationTile extends StatelessWidget {
-  final String title;
-  final String description;
-  final String imageUrl;
-  final double latitude;
-  final double longitude;
-
-  const _LocationTile({
-    required this.title,
-    required this.description,
-    required this.imageUrl,
-    required this.latitude,
-    required this.longitude,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: Stack(
-        children: [
-          AspectRatio(
-            aspectRatio: 14 / 11,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LandmarkDetailPage(
-                      name: title,
-                      location: 'San Francisco, CA',
-                      imageUrl: imageUrl,
-                      description: description,
-                      latitude: latitude,
-                      longitude: longitude,
-                    ),
-                  ),
-                );
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  image: DecorationImage(
-                    image: NetworkImage(imageUrl),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  stops: const [0.1, 1.0],
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.75)],
-                ),
-                borderRadius: const BorderRadius.vertical(
-                  bottom: Radius.circular(16),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    description,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(.9),
-                      fontSize: 11,
-                      height: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 // --- Weather Info Section --------------------------------------------------
 class _WeatherInfoSection extends StatefulWidget {

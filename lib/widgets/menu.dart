@@ -1,4 +1,6 @@
 import 'package:Loaf/screens/profile_page.dart';
+import 'package:Loaf/screens/your_lists_page.dart';
+import 'package:Loaf/screens/friends_page.dart';
 import 'package:flutter/material.dart';
 import 'package:Loaf/screens/home_page.dart';
 import 'package:Loaf/screens/add_page.dart';
@@ -26,31 +28,58 @@ class _AppNavScaffoldState extends State<AppNavScaffold> {
     _selectedIndex = widget.initialIndex;
   }
 
-  void _onItemTapped(int index) {
+  void _onItemTapped(int index) async {
     if (index == _selectedIndex) return;
     if (index == 0) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomePage()),
       );
+      setState(() {
+        _selectedIndex = index;
+      });
     } else if (index == 1) {
-      // TODO: Navigate to Your Lists page
+      if (widget.body.runtimeType != YourListsPage) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const YourListsPage()),
+        );
+        setState(() {
+          _selectedIndex = index;
+        });
+      }
     } else if (index == 2) {
-      Navigator.push(
+      final prevIndex = _selectedIndex;
+      setState(() {
+        _selectedIndex = index;
+      });
+      await Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => AddPage()),
       );
+      // After returning from AddPage, reset to previous index so Add Slice can be tapped again
+      setState(() {
+        _selectedIndex = prevIndex;
+      });
     } else if (index == 3) {
-      // TODO: Navigate to Friends page
+      if (widget.body.runtimeType != FriendsPage) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const FriendsPage()),
+        );
+        setState(() {
+          _selectedIndex = index;
+        });
+      }
     } else if (index == 4) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => ProfilePage()),
       );
+      setState(() {
+        _selectedIndex = index;
+      });
     }
-    setState(() {
-      _selectedIndex = index;
-    });
   }
 
   @override
@@ -74,7 +103,7 @@ class _AppNavScaffoldState extends State<AppNavScaffold> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_location_alt),
-            label: 'Add Location',
+            label: 'Add Slice',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.people),
