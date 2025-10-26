@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ungatekept/screens/landmark_details_page.dart';
-import 'package:ungatekept/screens/add_page.dart'; 
+import 'package:Loaf/providers/auth.dart';
+import 'package:Loaf/screens/auth_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -20,7 +21,7 @@ class HomePage extends StatelessWidget {
               onPressed: () {},
             ),
             title: const Text(
-              'Ungatekept',
+              'Loaf',
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             bottom: PreferredSize(
@@ -113,7 +114,6 @@ class _LocationTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: Stack(
         children: [
-          // Full-width image card (single column)
           AspectRatio(
             aspectRatio: 16 / 11, // tweak to match your mock height
             child: Ink.image(
@@ -139,7 +139,6 @@ class _LocationTile extends StatelessWidget {
             ),
           ),
 
-          // Bottom gradient with title + description
           Positioned(
             left: 0,
             right: 0,
@@ -181,19 +180,34 @@ class _LocationTile extends StatelessWidget {
                       height: 1.2,
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: tags
+                        .map(
+                          (tag) => Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              tag,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 9,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
                 ],
-              ),
-            ),
-          ),
-
-          // Subtle inner border to keep edges crisp
-          Positioned.fill(
-            child: IgnorePointer(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white10, width: 0.6),
-                  borderRadius: BorderRadius.circular(16),
-                ),
               ),
             ),
           ),
@@ -204,6 +218,7 @@ class _LocationTile extends StatelessWidget {
 }
 
 // Mock data, replace with real data source later
+
 class _Location {
   final String title;
   final String description;
@@ -223,35 +238,53 @@ class _Location {
 const _mockMenu = <_Location>[
   _Location(
     'Palace of Fine Arts',
-    'Short description here. Short description here. Short description here.',
+    'A historic landmark surrounded by a serene pond.',
     'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
     37.8025,  // latitude
     -122.4488, // longitude
   ),
   _Location(
-    'Wing Wall',
-    'Short description here. Short description here. Short description here.',
+    'Palace of Fine Arts',
+    'A historic landmark surrounded by a serene pond.',
     'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
     37.7749,  // latitude
     -122.4194, // longitude
   ),
   _Location(
-    'Ocean Beach',
-    'Short description here. Short description here. Short description here.',
+    'Palace of Fine Arts',
+    'A historic landmark surrounded by a serene pond.',
+    'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
+    ['Pond', 'Architecture', 'Landmark'],
+  ),
+  _Location(
+    'Palace of Fine Arts',
+    'A historic landmark surrounded by a serene pond.',
     'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
     37.7596,  // latitude
     -122.5107, // longitude
   ),
   _Location(
-    'Dolores Park',
-    'Short description here. Short description here. Short description here.',
+    'Palace of Fine Arts',
+    'A historic landmark surrounded by a serene pond.',
     'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
     37.7596,  // latitude
     -122.4269, // longitude
   ),
   _Location(
-    'Crissy Field',
-    'Short description here. Short description here. Short description here.',
+    'Palace of Fine Arts',
+    'A historic landmark surrounded by a serene pond.',
+    'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
+    ['Pond', 'Architecture', 'Landmark'],
+  ),
+  _Location(
+    'Palace of Fine Arts',
+    'A historic landmark surrounded by a serene pond.',
+    'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
+    ['Pond', 'Architecture', 'Landmark'],
+  ),
+  _Location(
+    'Palace of Fine Arts',
+    'A historic landmark surrounded by a serene pond.',
     'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
     37.8052,  // latitude
     -122.4652, // longitude
