@@ -102,49 +102,7 @@ class HomePage extends StatelessWidget {
 
             ],
           ),
-          Positioned(
-            bottom: 24,
-            right: 24,
-            child: StreamBuilder<User?>(
-              stream: FirebaseAuth.instance.authStateChanges(),
-              builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
-                if (snapshot.hasError) {
-                  return const Text('Something went wrong');
-                }
-
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Text("Loading...");
-                }
-
-                if (snapshot.hasData && snapshot.data != null) {
-                  return FloatingActionButton.extended(
-                    onPressed: () {
-                      Auth().signOut(context: context);
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => AuthPage()),
-                      );
-                    },
-                    label: const Text('Log out'),
-                    icon: const Icon(Icons.person),
-                    backgroundColor: const Color(0xff41342b),
-                  );
-                }
-
-                return FloatingActionButton.extended(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => AuthPage()),
-                    );
-                  },
-                  label: const Text('Login / Sign Up'),
-                  icon: const Icon(Icons.person),
-                  backgroundColor: const Color(0xff41342b),
-                );
-              },
-            ),
-          ),
+          // Removed log out button from home page
         ],
       ),
     );
