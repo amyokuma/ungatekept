@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-
-
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class AddPage extends StatefulWidget {
   const AddPage({Key? key}) : super(key: key);
@@ -11,6 +11,22 @@ class AddPage extends StatefulWidget {
 }
 
 class _AddPageState extends State<AddPage> {
+
+  List<File> _selectedImages = [];
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImages() async {
+    final List<XFile>? pickedFiles = await _picker.pickMultiImage(
+      maxWidth: 1200,
+      maxHeight: 1200,
+      imageQuality: 85,
+    );
+    if (pickedFiles != null && pickedFiles.isNotEmpty) {
+      setState(() {
+        _selectedImages = pickedFiles.map((x) => File(x.path)).toList();
+      });
+    }
+  }
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _locationController = TextEditingController();
@@ -194,28 +210,80 @@ class _AddPageState extends State<AddPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Image upload placeholder
-              Container(
-                width: double.infinity,
-                height: 200,
-                decoration: BoxDecoration(
-                  color: const Color(0xffe7dfd8),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xffd2c2b2), width: 2, style: BorderStyle.solid),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.add_photo_alternate, size: 48, color: Color(0xffbca18c)),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Add Photo',
-                      style: TextStyle(
-                        color: Color(0xff795548),
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
+              // Multi-image upload section
+              GestureDetector(
+                onTap: _pickImages,
+                child: Container(
+                  width: double.infinity,
+                  constraints: const BoxConstraints(minHeight: 200, maxHeight: 320),
+                  decoration: BoxDecoration(
+                    color: const Color(0xffe7dfd8),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xffd2c2b2), width: 2, style: BorderStyle.solid),
+                  ),
+                  child: _selectedImages.isNotEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: GridView.count(
+                            crossAxisCount: 3,
+                            mainAxisSpacing: 8,
+                            crossAxisSpacing: 8,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: List.generate(_selectedImages.length, (idx) {
+                              return Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(5),
+                                    child: Image.file(
+                                      _selectedImages[idx],
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 4,
+                                    right: 4,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedImages.removeAt(idx);
+                                        });
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(0.5),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        padding: const EdgeInsets.all(2),
+                                        child: const Icon(
+                                          Icons.close,
+                                          color: Colors.white,
+                                          size: 20,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }),
+                          ),
+                        )
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.add_photo_alternate, size: 48, color: Color(0xffbca18c)),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Add Photo(s)',
+                              style: TextStyle(
+                                color: Color(0xff795548),
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
                 ),
               ),
               
