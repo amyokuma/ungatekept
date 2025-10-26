@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ungatekept/screens/landmark_details_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -68,7 +69,10 @@ class _SearchField extends StatelessWidget {
         prefixIcon: const Icon(Icons.search, color: Colors.white70),
         filled: true,
         fillColor: const Color(0xff41342b),
-        contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 14,
+          horizontal: 16,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(24),
           borderSide: BorderSide.none,
@@ -98,10 +102,20 @@ class _LocationTile extends StatelessWidget {
           // Full-width image card (single column)
           AspectRatio(
             aspectRatio: 16 / 11, // tweak to match your mock height
-            child: Ink.image(
-              image: NetworkImage(imageUrl),
-              fit: BoxFit.cover,
-              child: InkWell(onTap: () {}),
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LandmarkDetailPage(
+                      name: title,
+                      location: 'San Francisco, CA',
+                      imageUrl: imageUrl,
+                      description: description,
+                    ),
+                  ),
+                );
+              },
             ),
           ),
 
@@ -117,10 +131,7 @@ class _LocationTile extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   stops: const [0.1, 1.0],
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.75),
-                  ],
+                  colors: [Colors.transparent, Colors.black.withOpacity(0.75)],
                 ),
               ),
               child: Column(
