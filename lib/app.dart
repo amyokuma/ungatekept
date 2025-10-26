@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'screens/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'screens/auth_page.dart';
+import 'screens/splash_page.dart';
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
@@ -10,7 +11,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'ungatekept',
+      title: 'Loaf',
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xfff8f4f3),
         brightness: Brightness.light,
@@ -25,16 +26,23 @@ class MainApp extends StatelessWidget {
             fontSize: 72,
             fontWeight: FontWeight.bold,
           ),
-          titleLarge: GoogleFonts.oswald(
-            fontSize: 30,
-            fontStyle: FontStyle.italic,
+          titleLarge: GoogleFonts.openSans(
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
           ),
-          bodyMedium: GoogleFonts.openSans(fontSize: 24),
+          bodyMedium: GoogleFonts.openSans(
+            fontSize: 18
+          ),
           displaySmall: GoogleFonts.openSans(),
         ),
         iconTheme: const IconThemeData(color: Colors.white70),
       ),
-      home: HomePage(),
+      home: const SplashPage(),
+      routes: {
+        '/auth': (context) => const AuthPage(),
+        '/home': (context) => const HomePage(),
+        '/splash': (context) => const SplashPage(),
+      },
     );
   }
 }
