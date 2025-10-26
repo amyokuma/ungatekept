@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ungatekept/providers/auth.dart';
-import 'package:ungatekept/screens/home_page.dart';
+import 'package:Loaf/providers/auth.dart';
+import 'package:Loaf/screens/home_page.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -287,7 +287,7 @@ class _AuthPageState extends State<AuthPage> {
                             children: [
                               Text(
                                 _isSigningUp
-                                    ? 'OVERFLOW.FIX'
+                                    ? 'Already have an account?'
                                     : 'No account yet?',
                               ),
                               TextButton(

@@ -39,7 +39,7 @@ class MainApp extends StatelessWidget {
       ),
       home: const SplashPage(),
       routes: {
-        AuthPage.route: (context) => const AuthPage(),
+        '/auth': (context) => const AuthPage(),
         '/home': (context) => const HomePage(),
         '/splash': (context) => const SplashPage(),
       },

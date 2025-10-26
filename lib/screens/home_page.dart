@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ungatekept/providers/auth.dart';
-import 'package:ungatekept/screens/auth_page.dart';
+import 'package:Loaf/providers/auth.dart';
+import 'package:Loaf/screens/auth_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePage extends StatelessWidget {
