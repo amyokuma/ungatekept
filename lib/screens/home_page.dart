@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ungatekept/providers/auth.dart';
+import 'package:ungatekept/screens/auth_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -51,13 +54,45 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.pushNamed(context, '/auth');
+      floatingActionButton: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
+          if (snapshot.hasError) {
+            return const Text('Something went wrong');
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Text("Loading...");
+          }
+
+          if (snapshot.hasData) {
+            return FloatingActionButton.extended(
+              onPressed: () {
+                Auth().signOut(context: context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => AuthPage()),
+                );
+              },
+              label: const Text('Log out'),
+              icon: const Icon(Icons.person),
+              backgroundColor: const Color(0xff41342b),
+            );
+          }
+
+          final user = snapshot.data!;
+          return FloatingActionButton.extended(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => AuthPage()),
+              );
+            },
+            label: const Text('Login / Sign Up'),
+            icon: const Icon(Icons.person),
+            backgroundColor: const Color(0xff41342b),
+          );
         },
-        label: const Text('Login / Sign Up'),
-        icon: const Icon(Icons.person),
-        backgroundColor: const Color(0xff41342b),
       ),
     );
   }
@@ -77,7 +112,10 @@ class _SearchField extends StatelessWidget {
         prefixIcon: const Icon(Icons.search, color: Colors.white70),
         filled: true,
         fillColor: const Color(0xff41342b),
-        contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 14,
+          horizontal: 16,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(24),
           borderSide: BorderSide.none,
@@ -126,10 +164,7 @@ class _LocationTile extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   stops: const [0, 1],
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.78),
-                  ],
+                  colors: [Colors.transparent, Colors.black.withOpacity(0.78)],
                 ),
               ),
               child: Column(
@@ -161,22 +196,26 @@ class _LocationTile extends StatelessWidget {
                     spacing: 8,
                     runSpacing: 6,
                     children: tags
-                        .map((tag) => Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(6),
+                        .map(
+                          (tag) => Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              tag,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 9,
+                                fontWeight: FontWeight.w600,
                               ),
-                              child: Text(
-                                tag,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ))
+                            ),
+                          ),
+                        )
                         .toList(),
                   ),
                 ],

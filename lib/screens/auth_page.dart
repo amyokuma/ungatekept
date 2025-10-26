@@ -3,8 +3,6 @@ import 'package:ungatekept/providers/auth.dart';
 import 'package:ungatekept/screens/home_page.dart';
 
 class AuthPage extends StatefulWidget {
-  static const route = '/auth';
-
   const AuthPage({super.key});
 
   @override

@@ -9,8 +9,11 @@ class Auth {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      print("reached");
-      print(e.code);
+      if (e.code == 'weak-password') {
+        print('weak password');
+      } else if (e.code == 'email-already-in-use') {
+        print('account already exists');
+      }
     } catch (e) {
       print(e);
     }
@@ -23,7 +26,11 @@ class Auth {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      print(e.code);
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+      }
     } catch (e) {
       print(e);
     }
