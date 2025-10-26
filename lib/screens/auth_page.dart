@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:ungatekept/providers/auth.dart';
+import 'package:ungatekept/screens/home_page.dart';
 
 class AuthPage extends StatefulWidget {
-  static const route = '/auth';
-
   const AuthPage({super.key});
 
   @override
@@ -52,7 +52,19 @@ class _AuthPageState extends State<AuthPage> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
 
-    // TODO: Replace with real authentication call.
+    if (_isSigningUp) {
+      print("is signing up");
+      await Auth().signUp(
+        email: _emailCtrl.text.trim(),
+        password: _passwordCtrl.text,
+      );
+    } else {
+      print("is signing up");
+      await Auth().signIn(
+        email: _emailCtrl.text.trim(),
+        password: _passwordCtrl.text,
+      );
+    }
     await Future.delayed(const Duration(seconds: 1));
 
     setState(() => _loading = false);
@@ -63,6 +75,11 @@ class _AuthPageState extends State<AuthPage> {
       SnackBar(content: Text('$action as ${_emailCtrl.text.trim()}')),
     );
 
+    // Example navigation after success:
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (BuildContext context) => const HomePage()),
+    );
   }
 
   Future<void> _googleSignIn() async {
@@ -217,8 +234,13 @@ class _AuthPageState extends State<AuthPage> {
                               labelText: 'Password',
                               prefixIcon: const Icon(Icons.lock),
                               suffixIcon: IconButton(
-                                icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
-                                onPressed: () => setState(() => _obscure = !_obscure),
+                                icon: Icon(
+                                  _obscure
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                                onPressed: () =>
+                                    setState(() => _obscure = !_obscure),
                               ),
                             ),
                             validator: _passwordValidator,
@@ -252,7 +274,9 @@ class _AuthPageState extends State<AuthPage> {
                                   ? const SizedBox(
                                       height: 18,
                                       width: 18,
-                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
                                     )
                                   : Text(_isSigningUp ? 'Sign Up' : 'Login'),
                             ),
@@ -261,7 +285,11 @@ class _AuthPageState extends State<AuthPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(_isSigningUp ? 'Already have an account?' : 'No account yet?'),
+                              Text(
+                                _isSigningUp
+                                    ? 'OVERFLOW.FIX'
+                                    : 'No account yet?',
+                              ),
                               TextButton(
                                 onPressed: () => setState(() {
                                   _isSigningUp = !_isSigningUp;
