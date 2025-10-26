@@ -3,7 +3,7 @@ import 'package:Loaf/providers/auth.dart';
 import 'package:Loaf/screens/auth_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:Loaf/screens/landmark_details_page.dart';
-import 'package:Loaf/screens/add_page.dart';
+import 'package:Loaf/screens/search_spot_screen.dart';
 import 'package:Loaf/widget/menu.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
@@ -26,6 +26,7 @@ class HomePage extends StatelessWidget {
                 pinned: true,
                 elevation: 0,
                 centerTitle: false,
+                automaticallyImplyLeading: false,
                 leading: null,
                 actions: [
                   IconButton(
@@ -119,22 +120,36 @@ class _SearchField extends StatelessWidget {
       child: SizedBox(
         height: 36,
         width: double.infinity,
-        child: TextField(
-          style: const TextStyle(color: Color(0xff795548)),
-          cursorColor: Color(0xff795548),
-          decoration: InputDecoration(
-            hintText: 'Search for a chill spot',
-            hintStyle: const TextStyle(color: Color(0xff795548)),
-            prefixIcon: const Icon(Icons.search, color: Color(0xff795548)),
-            filled: true,
-            fillColor: Color(0xffe0e0e0), // gray
-            contentPadding: const EdgeInsets.symmetric(
-              vertical: 8,
-              horizontal: 12,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide.none,
+        child: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                fullscreenDialog: true,
+                builder: (context) => const SearchSpotScreen(),
+              ),
+            );
+          },
+          child: AbsorbPointer(
+            child: TextField(
+              enabled: false,
+              style: const TextStyle(color: Color(0xff795548)),
+              cursorColor: Color(0xff795548),
+              decoration: InputDecoration(
+                hintText: 'Search for a chill spot',
+                hintStyle: const TextStyle(color: Color(0xff795548)),
+                prefixIcon: const Icon(Icons.search, color: Color(0xff795548)),
+                filled: true,
+                fillColor: Color(0xffe0e0e0),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 12,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+              ),
             ),
           ),
         ),
