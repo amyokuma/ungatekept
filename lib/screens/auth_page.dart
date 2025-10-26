@@ -103,15 +103,15 @@ class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    const building = 'https://storage.googleapis.com/calhacks-picture-bucket/building.jpg';
     if (!_showAuth) {
       // Initial "Get started" screen: logo image, button, small privacy / tos text
       return Scaffold(
         body: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(
-              'assets/images/building.jpg',
+            Image.network(
+              building,
               fit: BoxFit.cover,
             ),
               Container(

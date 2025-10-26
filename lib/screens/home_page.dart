@@ -47,8 +47,8 @@ class HomePage extends StatelessWidget {
                 title: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Image.asset(
-                      'assets/images/loaf_transparent.png',
+                    Image.network(
+                      'https://storage.googleapis.com/calhacks-picture-bucket/loaf_transparent.png',
                       width: 36,
                       height: 36,
                       fit: BoxFit.contain,

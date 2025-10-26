@@ -108,8 +108,8 @@ class _SearchSpotScreenState extends State<SearchSpotScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 15.0),
-                  child: Image.asset(
-                    'assets/images/loaf_transparent.png',
+                  child: Image.network(
+                    'https://storage.googleapis.com/calhacks-picture-bucket/loaf_transparent.png',
                     width: 36,
                     height: 36,
                     fit: BoxFit.contain,

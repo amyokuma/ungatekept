@@ -17,6 +17,10 @@ dependencies:
   firebase_core: ^4.2.0
   firebase_auth: ^6.1.1
   image_picker: ^1.2.0
+  extension_google_sign_in_as_googleapis_auth: ^3.0.0
+  google_sign_in: ^7.2.0
+  get: ^4.6.6
+  googleapis: ^15.0.0
 
 dev_dependencies:
   flutter_test:
@@ -26,6 +30,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/service-account.json
     - assets/images/
   fonts:
     - family: GamabadoSans
