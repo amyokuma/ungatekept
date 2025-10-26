@@ -65,7 +65,7 @@ class HomePage extends StatelessWidget {
             return const Text("Loading...");
           }
 
-          if (snapshot.hasData) {
+          if (snapshot.hasData && snapshot.data != null) {
             return FloatingActionButton.extended(
               onPressed: () {
                 Auth().signOut(context: context);
@@ -80,7 +80,6 @@ class HomePage extends StatelessWidget {
             );
           }
 
-          final user = snapshot.data!;
           return FloatingActionButton.extended(
             onPressed: () {
               Navigator.pushReplacement(
