@@ -34,7 +34,7 @@ class _AddPageState extends State<AddPage> {
   final _latitudeController = TextEditingController();
   final _longitudeController = TextEditingController();
   
-  List<String> _selectedCategories = ['Cozy'];
+  List<String> _selectedCategories = [];
   final List<String> _categories = [
     'Cozy',
     'Modern',
