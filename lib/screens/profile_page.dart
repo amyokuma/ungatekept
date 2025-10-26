@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:Loaf/providers/auth.dart';
 import 'package:Loaf/screens/auth_page.dart';
-import 'package:Loaf/widget/menu.dart';
+import 'package:Loaf/widgets/menu.dart';
 import 'package:Loaf/screens/landmark_details_page.dart';
 
 class ProfilePage extends StatelessWidget {

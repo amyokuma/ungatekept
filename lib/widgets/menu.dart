@@ -74,7 +74,7 @@ class _AppNavScaffoldState extends State<AppNavScaffold> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_location_alt),
-            label: 'Add Location',
+            label: 'Add Slice',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.people),

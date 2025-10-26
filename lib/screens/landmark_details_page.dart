@@ -58,7 +58,7 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xfff8f4f3),
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
@@ -107,18 +107,18 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
                 // Back button
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: const Color(0xfff8f4f3),
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withOpacity(0.08),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
                     ],
                   ),
                   child: IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+                    icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xff41342b), size: 20),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ),
@@ -129,11 +129,11 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
                     // Favorite button
                     Container(
                       decoration: BoxDecoration(
-                        color: isFavorited ? Colors.red : Colors.white,
+                        color: isFavorited ? const Color(0xff795548) : Colors.white,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withOpacity(0.08),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -142,7 +142,7 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
                       child: IconButton(
                         icon: Icon(
                           isFavorited ? Icons.favorite : Icons.favorite_border,
-                          color: isFavorited ? Colors.white : Colors.black,
+                          color: isFavorited ? Colors.white : const Color(0xff41342b),
                           size: 22,
                         ),
                         onPressed: () {
@@ -161,14 +161,14 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withOpacity(0.08),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
                         ],
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.share, color: Colors.black, size: 22),
+                        icon: const Icon(Icons.share, color: Color(0xff41342b), size: 22),
                         onPressed: () {},
                       ),
                     ),
@@ -191,7 +191,7 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -205,6 +205,7 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
+              color: Color(0xff41342b),
             ),
           ),
           const SizedBox(height: 20),
@@ -219,6 +220,7 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
                     style: const TextStyle(
                       fontSize: 48,
                       fontWeight: FontWeight.bold,
+                      color: Color(0xff41342b),
                     ),
                   ),
                   Row(
@@ -236,7 +238,7 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
                   Text(
                     '${(landmark['totalReviews'] as int).toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} reviews',
                     style: const TextStyle(
-                      color: Colors.grey,
+                      color: Color(0xff795548),
                       fontSize: 14,
                     ),
                   ),
@@ -271,14 +273,14 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
             width: 30,
             child: Text(
               '$stars★',
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+              style: const TextStyle(fontSize: 12, color: Color(0xff795548)),
             ),
           ),
           Expanded(
             child: Container(
               height: 8,
               decoration: BoxDecoration(
-                color: Colors.grey[200],
+                color: const Color(0xfff8f4f3),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: FractionallySizedBox(
@@ -286,9 +288,7 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
                 widthFactor: percentage,
                 child: Container(
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFFBBF24), Color(0xFFF59E0B)],
-                    ),
+                    color: const Color(0xff795548),
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -300,7 +300,7 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
             width: 40,
             child: Text(
               '${(percentage * 100).toInt()}%',
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+              style: const TextStyle(fontSize: 12, color: Color(0xff795548)),
             ),
           ),
         ],
@@ -325,9 +325,7 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF9333EA), Color(0xFF2563EB)],
-              ),
+              color: const Color(0xff795548),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
@@ -353,7 +351,7 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -368,12 +366,12 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
             style: const TextStyle(
               fontSize: 16,
               height: 1.6,
-              color: Color(0xFF475569),
+              color: Color(0xff41342b),
             ),
           ),
           
           const SizedBox(height: 24),
-          const Divider(),
+          Divider(color: const Color(0xff795548).withOpacity(0.15)),
           const SizedBox(height: 20),
           
           // Quick Info Grid
@@ -398,7 +396,7 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
           ),
           
           const SizedBox(height: 20),
-          const Divider(),
+          Divider(color: const Color(0xff795548).withOpacity(0.15)),
           const SizedBox(height: 16),
           
           // Highlights
@@ -407,6 +405,7 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
+              color: Color(0xff41342b),
             ),
           ),
           const SizedBox(height: 12),
@@ -419,7 +418,7 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
                   const Text(
                     '• ',
                     style: TextStyle(
-                      color: Color(0xFF9333EA),
+                      color: Color(0xff795548),
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -429,7 +428,7 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
                       highlight,
                       style: const TextStyle(
                         fontSize: 15,
-                        color: Color(0xFF475569),
+                        color: Color(0xff41342b),
                       ),
                     ),
                   ),
@@ -448,13 +447,13 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
       children: [
         Row(
           children: [
-            Icon(icon, color: const Color(0xFF9333EA), size: 18),
+            Icon(icon, color: const Color(0xff795548), size: 18),
             const SizedBox(width: 6),
             Text(
               label,
               style: const TextStyle(
                 fontSize: 12,
-                color: Color(0xFF64748B),
+                color: Color(0xff795548),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -465,7 +464,7 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
           value,
           style: const TextStyle(
             fontSize: 14,
-            color: Color(0xFF1E293B),
+            color: Color(0xff41342b),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -496,7 +495,7 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withOpacity(0.06),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -585,11 +584,11 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: const Color(0xff795548),
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
+                          color: Colors.black.withOpacity(0.10),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -598,12 +597,12 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: const [
-                        Icon(Icons.directions, size: 18, color: Color(0xFF9333EA)),
+                        Icon(Icons.directions, size: 18, color: Colors.white),
                         SizedBox(width: 6),
                         Text(
                           'Get Directions',
                           style: TextStyle(
-                            color: Color(0xFF9333EA),
+                            color: Colors.white,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),
@@ -627,21 +626,21 @@ class _LandmarkDetailPageState extends State<LandmarkDetailPage> {
                   style: const TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E293B),
+                    color: Color(0xff41342b),
                     height: 1.2,
                   ),
                 ),
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    const Icon(Icons.location_on, color: Color(0xFF64748B), size: 20),
+                    const Icon(Icons.location_on, color: Color(0xff795548), size: 20),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
                         location,
                         style: const TextStyle(
                           fontSize: 16,
-                          color: Color(0xFF64748B),
+                          color: Color(0xff795548),
                         ),
                       ),
                     ),
