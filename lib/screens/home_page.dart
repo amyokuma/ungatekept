@@ -62,6 +62,7 @@ class HomePage extends StatelessWidget {
       //     Navigator.push(
       //       context,
       //       MaterialPageRoute(builder: (context) => AddPage()),
+      //     )}),
       floatingActionButton: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
