@@ -57,6 +57,11 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(builder: (context) => AddPage()),
       floatingActionButton: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
@@ -95,8 +100,6 @@ class HomePage extends StatelessWidget {
             backgroundColor: const Color(0xff41342b),
           );
         },
-        backgroundColor: const Color(0xFF9333EA),
-        child: const Icon(Icons.add, size: 28),
       ),
     );
   }
@@ -116,7 +119,10 @@ class _SearchField extends StatelessWidget {
         prefixIcon: const Icon(Icons.search, color: Colors.white70),
         filled: true,
         fillColor: const Color(0xff41342b),
-        contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 14,
+          horizontal: 16,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(24),
           borderSide: BorderSide.none,
@@ -183,10 +189,7 @@ class _LocationTile extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   stops: const [0.1, 1.0],
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.75),
-                  ],
+                  colors: [Colors.transparent, Colors.black.withOpacity(0.75)],
                 ),
               ),
               child: Column(
@@ -232,7 +235,7 @@ class _Location {
   final String imageUrl;
   final double latitude;
   final double longitude;
-  
+
   const _Location(
     this.title,
     this.description,
@@ -247,56 +250,56 @@ const _mockMenu = <_Location>[
     'Palace of Fine Arts',
     'A historic landmark surrounded by a serene pond.',
     'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
-    37.8025,  // latitude
+    37.8025, // latitude
     -122.4488, // longitude
   ),
   _Location(
     'Palace of Fine Arts',
     'A historic landmark surrounded by a serene pond.',
     'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
-    37.7749,  // latitude
+    37.7749, // latitude
     -122.4194, // longitude
   ),
   _Location(
     'Palace of Fine Arts',
     'A historic landmark surrounded by a serene pond.',
     'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
-    37.7596,  // latitude
+    37.7596, // latitude
     -122.4269, // longitude
   ),
   _Location(
     'Palace of Fine Arts',
     'A historic landmark surrounded by a serene pond.',
     'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
-    37.7596,  // latitude
+    37.7596, // latitude
     -122.5107, // longitude
   ),
   _Location(
     'Palace of Fine Arts',
     'A historic landmark surrounded by a serene pond.',
     'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
-    37.7596,  // latitude
+    37.7596, // latitude
     -122.4269, // longitude
   ),
   _Location(
     'Palace of Fine Arts',
     'A historic landmark surrounded by a serene pond.',
     'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
-    37.7596,  // latitude
+    37.7596, // latitude
     -122.4269, // longitude
   ),
   _Location(
     'Palace of Fine Arts',
     'A historic landmark surrounded by a serene pond.',
     'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
-    37.7596,  // latitude
+    37.7596, // latitude
     -122.4269, // longitude
   ),
   _Location(
     'Palace of Fine Arts',
     'A historic landmark surrounded by a serene pond.',
     'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
-    37.8052,  // latitude
+    37.8052, // latitude
     -122.4652, // longitude
   ),
 ];
