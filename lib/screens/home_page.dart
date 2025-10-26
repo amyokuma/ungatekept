@@ -18,7 +18,7 @@ class HomePage extends StatelessWidget {
               onPressed: () {},
             ),
             title: const Text(
-              'Ungatekept',
+              'Loaf',
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             bottom: PreferredSize(
@@ -43,12 +43,21 @@ class HomePage extends StatelessWidget {
                     title: item.title,
                     description: item.description,
                     imageUrl: item.imageUrl,
+                    tags: item.tags,
                   ),
                 );
               },
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.pushNamed(context, '/auth');
+        },
+        label: const Text('Login / Sign Up'),
+        icon: const Icon(Icons.person),
+        backgroundColor: const Color(0xff41342b),
       ),
     );
   }
@@ -82,11 +91,13 @@ class _LocationTile extends StatelessWidget {
   final String title;
   final String description;
   final String imageUrl;
+  final List<String> tags;
 
   const _LocationTile({
     required this.title,
     required this.description,
     required this.imageUrl,
+    required this.tags,
   });
 
   @override
@@ -95,9 +106,8 @@ class _LocationTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: Stack(
         children: [
-          // Full-width image card (single column)
           AspectRatio(
-            aspectRatio: 16 / 11, // tweak to match your mock height
+            aspectRatio: 14 / 11,
             child: Ink.image(
               image: NetworkImage(imageUrl),
               fit: BoxFit.cover,
@@ -105,7 +115,6 @@ class _LocationTile extends StatelessWidget {
             ),
           ),
 
-          // Bottom gradient with title + description
           Positioned(
             left: 0,
             right: 0,
@@ -116,10 +125,10 @@ class _LocationTile extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  stops: const [0.1, 1.0],
+                  stops: const [0, 1],
                   colors: [
                     Colors.transparent,
-                    Colors.black.withOpacity(0.75),
+                    Colors.black.withOpacity(0.78),
                   ],
                 ),
               ),
@@ -147,19 +156,30 @@ class _LocationTile extends StatelessWidget {
                       height: 1.2,
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: tags
+                        .map((tag) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                tag,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ))
+                        .toList(),
+                  ),
                 ],
-              ),
-            ),
-          ),
-
-          // Subtle inner border to keep edges crisp
-          Positioned.fill(
-            child: IgnorePointer(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white10, width: 0.6),
-                  borderRadius: BorderRadius.circular(16),
-                ),
               ),
             ),
           ),
@@ -170,37 +190,63 @@ class _LocationTile extends StatelessWidget {
 }
 
 // Mock data, replace with real data source later
+
 class _Location {
   final String title;
   final String description;
   final String imageUrl;
-  const _Location(this.title, this.description, this.imageUrl);
+  final List<String> tags;
+
+  const _Location(this.title, this.description, this.imageUrl, this.tags);
 }
 
 const _mockMenu = <_Location>[
   _Location(
     'Palace of Fine Arts',
-    'Short description here. Short description here. Short description here.',
+    'A historic landmark surrounded by a serene pond.',
     'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
+    ['Pond', 'Architecture', 'Landmark'],
   ),
   _Location(
-    'Wing Wall',
-    'Short description here. Short description here. Short description here.',
+    'Palace of Fine Arts',
+    'A historic landmark surrounded by a serene pond.',
     'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
+    ['Pond', 'Architecture', 'Landmark'],
   ),
   _Location(
-    'Ocean Beach',
-    'Short description here. Short description here. Short description here.',
+    'Palace of Fine Arts',
+    'A historic landmark surrounded by a serene pond.',
     'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
+    ['Pond', 'Architecture', 'Landmark'],
   ),
   _Location(
-    'Dolores Park',
-    'Short description here. Short description here. Short description here.',
+    'Palace of Fine Arts',
+    'A historic landmark surrounded by a serene pond.',
     'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
+    ['Pond', 'Architecture', 'Landmark'],
   ),
   _Location(
-    'Crissy Field',
-    'Short description here. Short description here. Short description here.',
+    'Palace of Fine Arts',
+    'A historic landmark surrounded by a serene pond.',
     'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
+    ['Pond', 'Architecture', 'Landmark'],
+  ),
+  _Location(
+    'Palace of Fine Arts',
+    'A historic landmark surrounded by a serene pond.',
+    'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
+    ['Pond', 'Architecture', 'Landmark'],
+  ),
+  _Location(
+    'Palace of Fine Arts',
+    'A historic landmark surrounded by a serene pond.',
+    'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
+    ['Pond', 'Architecture', 'Landmark'],
+  ),
+  _Location(
+    'Palace of Fine Arts',
+    'A historic landmark surrounded by a serene pond.',
+    'https://offloadmedia.feverup.com/secretsanfrancisco.com/wp-content/uploads/2022/05/13025636/palace-of-fine-arts-sf.jpg',
+    ['Pond', 'Architecture', 'Landmark'],
   ),
 ];
