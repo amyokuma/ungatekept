@@ -21,7 +21,7 @@ class HomePage extends StatelessWidget {
               onPressed: () {},
             ),
             title: const Text(
-              'Ungatekept',
+              'Loaf',
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             bottom: PreferredSize(
