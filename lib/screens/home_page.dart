@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:Loaf/providers/auth.dart';
 import 'package:Loaf/screens/auth_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:Loaf/screens/landmark_details_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
