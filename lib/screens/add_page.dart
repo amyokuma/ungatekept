@@ -1,10 +1,16 @@
+// import 'package:Loaf/providers/firestore.dart';
+import 'package:Loaf/providers/auth.dart';
+import 'package:Loaf/services/AddLocationService.dart';
+import 'package:Loaf/services/LocationService.dart';
+import 'package:Loaf/services/ReviewServices.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:Loaf/config/api_keys.dart';
-
 
 class AddPage extends StatefulWidget {
   const AddPage({Key? key}) : super(key: key);
@@ -20,7 +26,11 @@ class _AddPageState extends State<AddPage> {
   final _descriptionController = TextEditingController();
   final _latitudeController = TextEditingController();
   final _longitudeController = TextEditingController();
-  
+  final _auth = Auth();
+  final _locationService = LocationService();
+  final _reviewService = ReviewService();
+  // final _firestoreService = FirestoreService();
+
   String _selectedCategory = 'Architectural Marvel';
   final List<String> _categories = [
     'Architectural Marvel',
@@ -30,12 +40,17 @@ class _AddPageState extends State<AddPage> {
     'Hidden Gem',
     'Park & Recreation',
   ];
-  
+
   bool _isLoadingLocation = false;
   bool _isSearching = false;
   List<Map<String, dynamic>> _locationSuggestions = [];
   bool _showSuggestions = false;
   Timer? _debounce;
+  GeoPoint? _userLocation;
+  List<LocationWithDistance>? _nearbyLocations;
+  String? userId;
+  String? locationId;
+  List<String> tags = ["test"];
 
   @override
   void dispose() {
@@ -57,7 +72,9 @@ class _AddPageState extends State<AddPage> {
       // Check if location services are enabled
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        _showError('Location services are disabled. Please enable them in settings.');
+        _showError(
+          'Location services are disabled. Please enable them in settings.',
+        );
         setState(() {
           _isLoadingLocation = false;
         });
@@ -78,7 +95,9 @@ class _AddPageState extends State<AddPage> {
       }
 
       if (permission == LocationPermission.deniedForever) {
-        _showError('Location permissions are permanently denied. Please enable them in settings.');
+        _showError(
+          'Location permissions are permanently denied. Please enable them in settings.',
+        );
         setState(() {
           _isLoadingLocation = false;
         });
@@ -90,11 +109,19 @@ class _AddPageState extends State<AddPage> {
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      // Update the text fields
+      // fetch nearby locations
+      _userLocation = GeoPoint(position.latitude, position.longitude);
+
+      final results = await _locationService.findNearbyLocations(
+        _userLocation!,
+      );
+
+      // Update the text fields, locations list
       setState(() {
         _latitudeController.text = position.latitude.toStringAsFixed(6);
         _longitudeController.text = position.longitude.toStringAsFixed(6);
         _isLoadingLocation = false;
+        _nearbyLocations = results;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -149,46 +176,46 @@ class _AddPageState extends State<AddPage> {
     try {
       // Use your Maps API key (same one you're using for Static Maps)
       final apiKey = '${ApiKeys.googleMapsAPIKey}';
-      
+
       // Google Places Autocomplete API
       final url = Uri.parse(
         'https://maps.googleapis.com/maps/api/place/autocomplete/json?'
         'input=${Uri.encodeComponent(query)}'
         '&types=(cities)' // Only cities
-        '&key=$apiKey'
+        '&key=$apiKey',
       );
 
       final response = await http.get(url);
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        
+
         if (data['status'] == 'OK') {
           final predictions = data['predictions'] as List;
-          
+
           List<Map<String, dynamic>> suggestions = [];
-          
+
           // Get coordinates for each city (up to 5 results)
           for (var prediction in predictions.take(5)) {
             final placeId = prediction['place_id'];
-            
+
             // Get place details including coordinates
             final detailsUrl = Uri.parse(
               'https://maps.googleapis.com/maps/api/place/details/json?'
               'place_id=$placeId'
               '&fields=geometry'
-              '&key=$apiKey'
+              '&key=$apiKey',
             );
-            
+
             final detailsResponse = await http.get(detailsUrl);
-            
+
             if (detailsResponse.statusCode == 200) {
               final detailsData = json.decode(detailsResponse.body);
-              
+
               if (detailsData['status'] == 'OK') {
                 final result = detailsData['result'];
                 final location = result['geometry']['location'];
-                
+
                 suggestions.add({
                   'name': prediction['description'],
                   'lat': location['lat'],
@@ -197,7 +224,7 @@ class _AddPageState extends State<AddPage> {
               }
             }
           }
-          
+
           setState(() {
             _locationSuggestions = suggestions;
             _isSearching = false;
@@ -238,10 +265,37 @@ class _AddPageState extends State<AddPage> {
     });
   }
 
-  void _saveLandmark() {
+  Future<void> _saveLandmark() async {
+    // get location id if not exist
+    userId = await _auth.getCurrentUser();
+
+    if (userId == null) {
+      throw Exception("not logged in?");
+    }
+
     if (_formKey.currentState!.validate()) {
-      // TODO: Save landmark data to database
-      // For now, just navigate back
+      try {
+        if (locationId != null) {
+          await _locationService.addLocation(
+            name: _nameController.text,
+            coords: GeoPoint(_userLocation!.latitude, _userLocation!.longitude),
+            tags: tags,
+            description: _descriptionController.text,
+          );
+        } else {
+          locationId = await _reviewService.getNextID();
+
+          await _reviewService.addReview(
+            userId: userId!,
+            locationId: locationId!,
+            rating: 5,
+            description: _descriptionController.text,
+            pictureUrl: "TODO",
+          );
+        }
+      } catch (e) {
+        throw Exception("error");
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Landmark saved successfully!'),
@@ -300,26 +354,31 @@ class _AddPageState extends State<AddPage> {
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.grey[300]!, width: 2, style: BorderStyle.solid),
+                  border: Border.all(
+                    color: Colors.grey[300]!,
+                    width: 2,
+                    style: BorderStyle.solid,
+                  ),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.add_photo_alternate, size: 48, color: Colors.grey[400]),
+                    Icon(
+                      Icons.add_photo_alternate,
+                      size: 48,
+                      color: Colors.grey[400],
+                    ),
                     const SizedBox(height: 8),
                     Text(
                       'Add Photo',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 16,
-                      ),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 16),
                     ),
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Name field
               _buildTextField(
                 controller: _nameController,
@@ -332,9 +391,9 @@ class _AddPageState extends State<AddPage> {
                   return null;
                 },
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Location field with search dropdown
               const Text(
                 'Location',
@@ -346,9 +405,9 @@ class _AddPageState extends State<AddPage> {
               ),
               const SizedBox(height: 8),
               _buildLocationSearchField(),
-              
+
               const SizedBox(height: 16),
-              
+
               // Category dropdown
               const Text(
                 'Category',
@@ -384,9 +443,9 @@ class _AddPageState extends State<AddPage> {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Description field
               _buildTextField(
                 controller: _descriptionController,
@@ -400,9 +459,9 @@ class _AddPageState extends State<AddPage> {
                   return null;
                 },
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Coordinates section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -423,11 +482,17 @@ class _AddPageState extends State<AddPage> {
                             height: 16,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF9333EA)),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFF9333EA),
+                              ),
                             ),
                           )
                         : const Icon(Icons.my_location, size: 18),
-                    label: Text(_isLoadingLocation ? 'Getting location...' : 'Use My Location'),
+                    label: Text(
+                      _isLoadingLocation
+                          ? 'Getting location...'
+                          : 'Use My Location',
+                    ),
                     style: TextButton.styleFrom(
                       foregroundColor: const Color(0xFF9333EA),
                     ),
@@ -442,7 +507,9 @@ class _AddPageState extends State<AddPage> {
                       controller: _latitudeController,
                       label: 'Latitude',
                       hint: '37.8199',
-                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Required';
@@ -460,7 +527,9 @@ class _AddPageState extends State<AddPage> {
                       controller: _longitudeController,
                       label: 'Longitude',
                       hint: '-122.4783',
-                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Required';
@@ -474,9 +543,9 @@ class _AddPageState extends State<AddPage> {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               // Save button
               SizedBox(
                 width: double.infinity,
@@ -492,14 +561,11 @@ class _AddPageState extends State<AddPage> {
                   ),
                   child: const Text(
                     'Save Landmark',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 40),
             ],
           ),
@@ -535,7 +601,9 @@ class _AddPageState extends State<AddPage> {
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF9333EA)),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color(0xFF9333EA),
+                        ),
                       ),
                     ),
                   )
@@ -556,10 +624,13 @@ class _AddPageState extends State<AddPage> {
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: Colors.red, width: 2),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
           ),
         ),
-        
+
         // Dropdown suggestions
         if (_showSuggestions && _locationSuggestions.isNotEmpty)
           Container(
@@ -580,10 +651,8 @@ class _AddPageState extends State<AddPage> {
             child: ListView.separated(
               shrinkWrap: true,
               itemCount: _locationSuggestions.length,
-              separatorBuilder: (context, index) => Divider(
-                height: 1,
-                color: Colors.grey[200],
-              ),
+              separatorBuilder: (context, index) =>
+                  Divider(height: 1, color: Colors.grey[200]),
               itemBuilder: (context, index) {
                 final location = _locationSuggestions[index];
                 return ListTile(
@@ -656,7 +725,10 @@ class _AddPageState extends State<AddPage> {
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: Colors.red, width: 2),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
           ),
         ),
       ],
