@@ -173,7 +173,7 @@ class ProfilePage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         _StatColumn(
-                          number: '127',
+                          number: '0',
                           label: 'Followers',
                         ),
                         Container(
@@ -182,7 +182,7 @@ class ProfilePage extends StatelessWidget {
                           color: const Color(0xff41342b).withOpacity(0.2),
                         ),
                         _StatColumn(
-                          number: '89',
+                          number: '0',
                           label: 'Following',
                         ),
                         Container(
@@ -191,7 +191,7 @@ class ProfilePage extends StatelessWidget {
                           color: const Color(0xff41342b).withOpacity(0.2),
                         ),
                         _StatColumn(
-                          number: '24',
+                          number: '0',
                           label: 'Posts',
                         ),
                       ],
